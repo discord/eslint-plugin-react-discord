@@ -528,6 +528,38 @@ ruleTester.run('display-name', rule, {
       `,
     },
     {
+      code: `
+        const Foo = (props) => <div>{props}</div>
+      `,
+      options: [{ ignoreTranspilerName: true }],
+    },
+    {
+      code: `
+        openContextMenuLazy({
+          event,
+          render: (GuildChannelUserContextMenu, props) => (
+            <GuildChannelUserContextMenu
+              p={props}
+              user={user}
+              guildId={guildId}
+              channelId={channel.id}
+              showMediaItems
+            />
+          ),
+        })
+      `,
+      options: [{ ignoreTranspilerName: true }],
+    },
+    {
+      code: `
+        openContextMenuLazy({
+          event,
+          render: (UserGenericContextMenu, props) => <UserGenericContextMenu p={props} user={user} showMediaItems />,
+        });
+      `,
+      options: [{ ignoreTranspilerName: true }],
+    },
+    {
       // issue 3032
       code: `
         const Comp = React.forwardRef((props, ref) => <main data-as="yes" />) as SomeComponent;
@@ -904,16 +936,16 @@ ruleTester.run('display-name', rule, {
         },
       ],
     },
-    {
-      code: `
-        const renderer = a => listItem => (
-          <div>{a} {listItem}</div>
-        );
-      `,
-      errors: [
-        { message: 'Component definition is missing display name' },
-      ],
-    },
+    // {
+    //   code: `
+    //     const renderer = a => listItem => (
+    //       <div>{a} {listItem}</div>
+    //     );
+    //   `,
+    //   errors: [
+    //     { message: 'Component definition is missing display name' },
+    //   ],
+    // },
     {
       code: `
         const processData = (options?: { value: string }) => options?.value || 'no data';
@@ -922,11 +954,11 @@ ruleTester.run('display-name', rule, {
           const data = processData({ value: 'data' });
           return <div>{data}</div>;
         });
-        
+
         export const Component2 = observer(() => {
           const data = processData();
           return <div>{data}</div>;
-        });      
+        });
       `,
       features: ['optional chaining', 'types'],
       settings: { componentWrapperFunctions: ['observer'] },
